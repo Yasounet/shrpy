@@ -32,17 +32,11 @@ class File:
         """Returns custom filename, generated using `secrets.token_urlsafe`."""
         if self.custom_filename is None:
             custom_filename = secrets.token_urlsafe(nbytes)
-
-            if self.use_original_filename:
-                self.custom_filename = '{}-{}{}'.format(custom_filename, self.original_filename[:18], self.extension)
-            else:
+            if self.extension in config.TOKENIZED_EXTENSIONS:
                 self.custom_filename = '{}{}'.format(custom_filename, self.extension)
-
+            else:
+                self.custom_filename = '{}{}'.format(self.original_filename, self.extension)
         return self.custom_filename
-
-    def is_allowed(self) -> bool:
-        """Check if file is allowed, based on `config.ALLOWED_EXTENSIONS`."""
-        return self.extension in config.ALLOWED_EXTENSIONS
 
     def save(self, save_directory = config.UPLOAD_DIR) -> None:
         """Saves the file to `UPLOAD_DIR`."""
