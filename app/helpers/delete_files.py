@@ -8,7 +8,6 @@ class FileDeletionScheduler:
         self.scheduler = BackgroundScheduler()
         self.upload_directory = config.UPLOAD_DIR
         self.days_threshold = config.DELETE_THRESHOLD_DAYS
-        self.file_extensions_tuple = tuple(config.ALLOWED_EXTENSIONS)
 
     def get_files(self) -> list:
         """Returns a list of files from `config.UPLOAD_DIR` that match `config.ALLOWED_EXTENSIONS`"""
@@ -22,10 +21,6 @@ class FileDeletionScheduler:
             if os.path.isfile(file_path) is False:
                 continue
             
-            # If file uses wrong extension, skip it
-            if f.lower().endswith(self.file_extensions_tuple) is False:
-                continue
-
             # Everything is OK, append the file to our list
             files.append(file_path)
 
