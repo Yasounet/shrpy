@@ -1,6 +1,7 @@
 import os
 import flask
 import secrets
+import itertools
 from app import config
 from werkzeug.security import safe_join
 from werkzeug.utils import secure_filename
@@ -35,8 +36,19 @@ class File:
             if self.extension in config.TOKENIZED_EXTENSIONS:
                 self.custom_filename = '{}{}'.format(custom_filename, self.extension)
             else:
-                self.custom_filename = '{}{}'.format(self.original_filename, self.extension)
+                self.custom_filename = self.unique_filename()
         return self.custom_filename
+
+    def unique_filename(self, save_directory = config.UPLOAD_DIR) -> str:
+        unique_name = '{}{}'.format(self.original_filename, self.extension)
+        filepath = safe_join(save_directory, unique_name)
+
+        c = itertools.count()
+        while os.path.exists(filepath):
+            unique_name = '{}_{}{}'.format(self.original_filename, next(c), self.extension)
+            filepath = safe_join(save_directory, unique_name)
+
+        return unique_name
 
     def save(self, save_directory = config.UPLOAD_DIR) -> None:
         """Saves the file to `UPLOAD_DIR`."""
